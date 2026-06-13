@@ -1,0 +1,18 @@
+{
+  "schema": "astrel-config",
+  "current": 1,
+  "versions": [
+    {
+      "version": 1,
+      "status": "current",
+      "url": "https://schema.astrel.io/v1/astrel-config.schema.json",
+      "released": "2026-06-13"
+    }
+  ],
+  "status_definitions": {
+    "current": "The latest version. New configs are published against this.",
+    "supported": "Not the latest, but still actively published and validated. Safe to use.",
+    "deprecated": "Still served and valid, but scheduled for removal. Migrate before the sunset date.",
+    "sunset": "No longer published by Astrel. The schema file remains for archival validation of historic configs only."
+  }
+}
