@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://schema.astrel.io/v1/astrel-config.schema.json",
   "title": "Astrel Remote Config",
-  "description": "Published configuration schema for Astrel SDK consumption. Resolution order: Trigger → Lottery → Default",
+  "description": "Published configuration schema for Astrel SDK consumption. Resolution order: Override → Lottery → Default",
   "type": "object",
   "required": ["schema_version", "published_at", "aspects"],
   "additionalProperties": false,
@@ -35,13 +35,6 @@
         }
       }
     },
-    "triggers": {
-      "type": "array",
-      "description": "Ordered by priority (first active trigger with an override wins)",
-      "items": {
-        "$ref": "#/$defs/trigger"
-      }
-    },
     "aspects": {
       "type": "object",
       "description": "Aspect definitions keyed by slug",
@@ -61,26 +54,6 @@
         { "type": "array" }
       ]
     },
-    "trigger": {
-      "type": "object",
-      "required": ["slug", "active", "aspects"],
-      "additionalProperties": false,
-      "properties": {
-        "slug": {
-          "type": "string",
-          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-        },
-        "active": {
-          "type": "boolean"
-        },
-        "aspects": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/$defs/config_value"
-          }
-        }
-      }
-    },
     "aspect": {
       "type": "object",
       "required": ["type", "default"],
@@ -93,7 +66,12 @@
         },
         "default": {
           "$ref": "#/$defs/config_value",
-          "description": "Base value when no other layer matches"
+          "description": "Resolved value when the lottery is absent. When 'overridden' is true this holds the forced value the backend has pinned"
+        },
+        "overridden": {
+          "type": "boolean",
+          "default": false,
+          "description": "True when the backend has pinned this aspect to a forced value. The backend sets 'default' to the forced value and omits 'lottery'. SDKs treat this as the highest-priority layer and report it as the deciding layer in telemetry"
         },
         "lottery": {
           "$ref": "#/$defs/lottery_config"
