@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://schema.astrel.io/v1/astrel-config.schema.json",
   "title": "Astrel Remote Config",
-  "description": "Published configuration schema for Astrel SDK consumption. Resolution order: Trigger → Cohort → Lottery → Default",
+  "description": "Published configuration schema for Astrel SDK consumption. Resolution order: Trigger → Lottery → Default",
   "type": "object",
   "required": ["schema_version", "published_at", "aspects"],
   "additionalProperties": false,
@@ -30,8 +30,8 @@
         },
         "seed_format": {
           "type": "string",
-          "enum": ["{scoped_identifier}:{aspect_slug}"],
-          "description": "Template for hash seed. scoped_identifier is the user_id or team_id depending on the lottery scope"
+          "enum": ["{identifier}:{aspect_slug}"],
+          "description": "Template for hash seed. identifier is the value the SDK consumer passes at flag-resolution time"
         }
       }
     },
@@ -60,11 +60,6 @@
         { "type": "object" },
         { "type": "array" }
       ]
-    },
-    "scope": {
-      "type": "string",
-      "enum": ["user", "team"],
-      "description": "Whether this layer targets individual users or entire teams"
     },
     "trigger": {
       "type": "object",
@@ -100,45 +95,16 @@
           "$ref": "#/$defs/config_value",
           "description": "Base value when no other layer matches"
         },
-        "cohorts": {
-          "type": "array",
-          "description": "Ordered by priority (first match wins). Each cohort targets specific users or teams by identifier",
-          "items": {
-            "$ref": "#/$defs/cohort_entry"
-          }
-        },
         "lottery": {
           "$ref": "#/$defs/lottery_config"
         }
       }
     },
-    "cohort_entry": {
-      "type": "object",
-      "required": ["scope", "members", "value"],
-      "additionalProperties": false,
-      "properties": {
-        "scope": {
-          "$ref": "#/$defs/scope"
-        },
-        "members": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Pre-computed list of identifiers. For scope 'user' these are user IDs, for scope 'team' these are team IDs"
-        },
-        "value": {
-          "$ref": "#/$defs/config_value"
-        }
-      }
-    },
     "lottery_config": {
       "type": "object",
-      "required": ["scope", "buckets"],
+      "required": ["buckets"],
       "additionalProperties": false,
       "properties": {
-        "scope": {
-          "$ref": "#/$defs/scope",
-          "description": "Determines the hash seed identifier. 'user' = each user gets their own bucket. 'team' = whole team lands in the same bucket"
-        },
         "buckets": {
           "type": "array",
           "minItems": 2,
